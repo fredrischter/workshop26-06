@@ -1,0 +1,50 @@
+import groovy.sql.Sql
+
+apply plugin: 'groovy'
+apply plugin: 'eclipse'
+apply plugin: 'application'
+apply plugin: 'maven'
+
+configurations {
+    sqllite
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    runtime fileTree(dir: 'libs', include: '*.jar')
+    compile 'org.codehaus.groovy:groovy-all:2.4.3'
+    sqllite 'org.xerial:sqlite-jdbc:3.8.9.1'
+}
+
+URLClassLoader loader = GroovyObject.class.classLoader
+configurations.sqllite.each { File file ->
+    loader.addURL(file.toURL())
+}
+
+sourceSets {
+    main {
+        groovy {
+            srcDirs = ['src/main/groovy']
+        }
+    }
+
+    test {
+        groovy {
+            srcDirs = ['test/main/groovy']
+        }
+    }
+}
+
+task "create-dirs" << {
+   sourceSets*.resources.srcDirs*.each { it.mkdirs() }
+}
+
+mainClassName  = 'br.com.workshop.Main'
+
+version = '1.0'
+
+dependencies {
+}
